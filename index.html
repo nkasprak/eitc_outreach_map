@@ -2,11 +2,29 @@
 <html>
     <head>
         <title>EITC Participation Rates by State</title>
+        <meta name="viewport" content="width=device-width">
+        <script src="//use.typekit.net/hre4yus.js"></script>
+        <script type="text/javascript">
+        Typekit.load();
+        </script>
+        <style>
+        #map {
+            font-family:"myriad-pro-condensed",sans-serif;   
+        }
+        #map text, #map textpath {
+            cursor:pointer;   
+        }
+        .popup {
+            background-color:#eee;
+            border:1px solid #000
+        }
+        
+        </style>
     </head>
     <body>
     <div id="map" style="width:650px;height:433px"></div>
     
-    <script type="text/javascript" data-main="main.js" src="node_modules/requirejs/require.js"></script>
+    <script type="text/javascript" data-main="main.js" src="node_modules/requirejs/require.js"> </script>
     
     </body>
 </html>
