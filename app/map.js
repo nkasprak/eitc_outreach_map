@@ -1,4 +1,4 @@
-define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents"], function ($, Raphael, paths, mapColors, mapEvents) {
+define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], function ($, Raphael, paths, MapColors, mapEvents, legend) {
     "use strict";
     
     //create the main map object
@@ -9,10 +9,7 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents"], function ($, 
         
         //get width and height of the parent div (given in ops)
         m.width = $("#" + ops.mapDivID).width();
-        m.height = $("#" + ops.mapDivID).height();
-        
-        //color utility functions are defined in a separate module
-        m.colorUtils = mapColors;
+        m.height = m.width * (360 / 525);
         
         //assign data to object
         m.data = ops.data;
@@ -31,6 +28,37 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents"], function ($, 
         
         /*the popup is defined in the options*/
         m.popupTemplate = ops.popupTemplate;
+        
+        /*default popup style*/
+        m.popupStyle = {
+            padding: 10,
+            fontSize: 28,
+            bgColor: "#eee"
+        };
+        
+        m.fontFamily = $("#" + ops.mapDivID).css("font-family");
+        
+        /*load custom styles*/
+        (function () {
+            var option;
+            if (ops.popupStyle) {
+                for (option in ops.popupStyle) {
+                    if (ops.popupStyle.hasOwnProperty(option)) {
+                        m.popupStyle[option] = ops.popupStyle[option];
+                    }
+                }
+            }
+        }());
+        
+        if (ops.stateClick) {
+            m.stateClick = ops.stateClick;
+        } else {
+            m.stateClick = function () {
+                return false;
+            };
+        }
+        
+        m.colorConfig = ops.colorConfig;
         
         /*create the main Raphael canvas*/
         m.paper = new Raphael(ops.mapDivID, m.width, m.height);
@@ -135,8 +163,8 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents"], function ($, 
                 if (typeof (m.stateLabelObjs) === "undefined") {m.stateLabelObjs = {}; }
 				m.stateLabelObjs[state] = m.paper.text(coords[0], coords[1], state);
 				m.stateLabelObjs[state].attr({
-					"font-size": 28,
-					"font-family": $("#" + ops.mapDivID).css("font-family")
+					"font-size": 34,
+					"font-family": m.fontFamily
 				});
 				
 				//store raphael IDs of each label
@@ -178,6 +206,20 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents"], function ($, 
             //assign event handlers to the map and its objects - this is done in the events module
             mapEvents(m);
         };
+        
+        this.drawPaths();
+        this.colors = new MapColors(m.colorConfig, this);
+        this.colors.calcStateColors();
+        this.colors.applyStateColors();
+        
+        this.legendMaker = legend;
+        this.legendMaker.setBounds(m.min, m.max);
+        this.legendMaker.defineColors(ops.colorConfig.lowColor, ops.colorConfig.highColor, ops.colorConfig.zeroColor);
+        if (ops.legendFormatter) {
+            this.legendMaker.setFormatter(ops.legendFormatter);
+        }
+        this.legendMaker.draw(this);
+        
     };
     return map;
 });

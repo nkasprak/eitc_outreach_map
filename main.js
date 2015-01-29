@@ -7,7 +7,8 @@
         "uspaths": "../app/us_paths",
         "mapcolors" : "../app/mapcolors",
         "mapevents" : "../app/mapevents",
-        "eitcdata": "../app/eitc_data"
+        "eitcdata": "../app/eitc_data",
+        "legend" : "../app/legend"
     }
 });
 

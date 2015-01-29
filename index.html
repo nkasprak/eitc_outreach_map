@@ -8,21 +8,53 @@
         Typekit.load();
         </script>
         <style>
-        #map {
-            font-family:"myriad-pro-condensed",sans-serif;   
-        }
-        #map text, #map textpath {
-            cursor:pointer;   
-        }
-        .popup {
-            background-color:#eee;
-            border:1px solid #000
-        }
-        
+            body {
+                width:525px;
+                font-family:"myriad-pro-condensed",sans-serif;     
+            }
+            #map {
+                width:100%;
+                font-family:"myriad-pro-condensed",sans-serif;   
+            }
+            #map text, #map textpath {
+                cursor:pointer;   
+            }
+            .popup {
+                background-color:#eee;
+                border:1px solid #000;
+            }
+            #yearPicker {
+                font-weight:bold;
+                font-size:18pt;
+                text-align:center;
+                width:100%;
+            }
+
+            #yearPicker div {
+                display:inline-block;
+                padding:2pt;
+                color:#aaa;
+                cursor:pointer;
+            }
+            
+            #yearPicker div.selected {
+                color:#000;   
+            }
+            
+            #yearPicker div:hover {
+                text-decoration:underline;
+            }
         </style>
     </head>
     <body>
-    <div id="map" style="width:650px;height:433px"></div>
+        
+        <div id="yearPicker">
+            <div data-year="2012" class="selected">2012</div>
+            <div data-year="2011">2011</div>
+            <div data-year="2010">2010</div>
+        </div>
+        
+    <div id="map"></div>
     
     <script type="text/javascript" data-main="main.js" src="node_modules/requirejs/require.js"> </script>
     
