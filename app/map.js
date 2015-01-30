@@ -1,3 +1,5 @@
+/*Reusable map code*/
+
 define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], function ($, Raphael, paths, MapColors, mapEvents, legend) {
     "use strict";
     

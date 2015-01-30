@@ -1,0 +1,52 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+    width:525px;
+    font-family:"myriad-pro-condensed",sans-serif;     
+}
+
+h2.maintitle {
+    text-align:center;
+    padding:0px;
+    margin:0px;
+}
+
+#map {
+    width:100%;
+    font-family:"myriad-pro-condensed",sans-serif;   
+}
+#map text, #map textpath {
+    cursor:pointer;   
+}
+.popup {
+    background-color:#eee;
+    border:1px solid #000;
+}
+.popup h4 {
+    margin:0px;padding:0px;   
+}
+.popup p {
+    margin-bottom:0px;padding-bottom:0px;   
+}
+#yearPicker {
+    font-weight:bold;
+    font-size:15pt;
+    text-align:center;
+    width:100%;
+}
+
+#yearPicker div {
+    display:inline-block;
+    padding:2pt;
+    color:#aaa;
+    cursor:pointer;
+}
+
+#yearPicker div.selected {
+    color:#000;   
+}
+
+#yearPicker div:hover {
+    text-decoration:underline;
+}

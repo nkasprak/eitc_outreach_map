@@ -2,52 +2,16 @@
 <html>
     <head>
         <title>EITC Participation Rates by State</title>
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
         <script src="//use.typekit.net/hre4yus.js"></script>
         <script type="text/javascript">
         Typekit.load();
         </script>
-        <style>
-            body {
-                width:525px;
-                font-family:"myriad-pro-condensed",sans-serif;     
-            }
-            #map {
-                width:100%;
-                font-family:"myriad-pro-condensed",sans-serif;   
-            }
-            #map text, #map textpath {
-                cursor:pointer;   
-            }
-            .popup {
-                background-color:#eee;
-                border:1px solid #000;
-            }
-            #yearPicker {
-                font-weight:bold;
-                font-size:18pt;
-                text-align:center;
-                width:100%;
-            }
-
-            #yearPicker div {
-                display:inline-block;
-                padding:2pt;
-                color:#aaa;
-                cursor:pointer;
-            }
-            
-            #yearPicker div.selected {
-                color:#000;   
-            }
-            
-            #yearPicker div:hover {
-                text-decoration:underline;
-            }
-        </style>
+        <link rel="stylesheet" href="eitc_map.css">
     </head>
     <body>
-        
+        <h2 class="maintitle">EITC Usage By State</h2>
         <div id="yearPicker">
             <div data-year="2012" class="selected">2012</div>
             <div data-year="2011">2011</div>

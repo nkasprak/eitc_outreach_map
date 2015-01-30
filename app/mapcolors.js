@@ -1,23 +1,33 @@
 define(["jquery"], function ($) {
     "use strict";
+    
+    /*Module for color related functionality. Map object is passed in
+    as m*/
     var colorUtils = function (colorConfig, m, customMax, customMin) {
         
+        //abbreviated reference to module object
         var c = this;
+        
+        //get the color configuration supplied by the user
         c.colorConfig = colorConfig;
+        
+        //function of (data set, data index, max or min?) to return max/min
         c.calculateBound = function (d, dI, b) {
             var state, bound;
             for (state in d) {
                 if (d.hasOwnProperty(state)) {
-                    if (typeof (bound) === "undefined") {
-                        bound = d[state][dI];
-                    } else {
-                        if (b === "min") {
-                            bound = Math.min(bound, d[state][dI]);
-                           
-                        } else if (b === "max") {
-                            bound = Math.max(bound, d[state][dI]);
+                    if (!isNaN(d[state][dI])) {
+                        if (typeof (bound) === "undefined") {
+                            bound = d[state][dI];
                         } else {
-                            return false;
+                            if (b === "min") {
+                                bound = Math.min(bound, d[state][dI]);
+
+                            } else if (b === "max") {
+                                bound = Math.max(bound, d[state][dI]);
+                            } else {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -25,9 +35,11 @@ define(["jquery"], function ($) {
             return bound;
         };
         
+        //store these as properties of the module object
         c.customMax = customMax;
         c.customMin = customMin;
         
+        //Use the custom max min if defined, otherwise, calculated based on data
         c.calculateMinMax = function () {
             if (c.customMax) {
                 m.max = c.customMax;
@@ -41,16 +53,9 @@ define(["jquery"], function ($) {
                 m.min = c.calculateBound(m.data, m.dataIndex, "min");
             }
         };
-        
         c.calculateMinMax();
-    
-        c.colorConfig = {
-            highColor : "#b9292f",
-            zeroColor : "#ffffff",
-            lowColor  : "#fff0d3",
-            hoverColor:	"#f8c55b"
-        };
 
+        //Converts HTML hex color to RGB array
         c.hexToRGB = function (hexString) {
             var r = parseInt(hexString.substr(1, 2), 16),
                 g = parseInt(hexString.substr(3, 2), 16),
@@ -58,6 +63,7 @@ define(["jquery"], function ($) {
             return [r, g, b];
         };
 
+        //And back the other way
         c.RGBToHex = function (rgbArray) {
             function pad(num, size) {
                 var s = "0" + num;
@@ -65,18 +71,27 @@ define(["jquery"], function ($) {
             }
             return "#" + pad(rgbArray[0].toString(16), 2) + pad(rgbArray[1].toString(16), 2) + pad(rgbArray[2].toString(16), 2);
         };
-
+        
+        //Storage for the hex codes for each state
         c.stateColors = {};
 
+        //Calculate colors based on map data
         c.calcStateColors = function () {
             var scale, state, dataPoint, dMax, dMin, calcColor, highRGB, lowRGB, zeroRGB, dataIndex, spansZero;
 
+            /*Get boundary colors*/
             highRGB = c.hexToRGB(c.colorConfig.highColor);
             zeroRGB = c.hexToRGB(c.colorConfig.zeroColor);
             lowRGB = c.hexToRGB(c.colorConfig.lowColor);
 
+            /*cScale is calculated based on the data. For data that doesn't go through zero,
+            0 = min and 1 = max. For data that does go through zero, dataMin to zero is mapped to
+            -1 to -2, and zero to dataMax is mapped to 0 to 1, for reasons explained below*/
             calcColor = function (cScale) {
                 var rgb = [], rgbVal, i;
+                if (isNaN(cScale)) {
+                    return c.colorConfig.noDataColor;
+                }
                 for (i = 0; i < 3; i += 1) {
                     if (spansZero) {
                         /*if the actual value was negative, cScale goes from -1 to -2, just as a signal
@@ -96,7 +111,7 @@ define(["jquery"], function ($) {
                 return c.RGBToHex(rgb);
             };
 
-
+            /*For some reason these are local variables*/
             dMax = m.max;
             dMin = m.min;
             
@@ -106,6 +121,7 @@ define(["jquery"], function ($) {
                 if (m.data.hasOwnProperty(state)) {
                     dataPoint = m.data[state][m.dataIndex];
                     
+                    //"scale" here becomes "cScale" in the above calcColor function
                     if (spansZero) {
                         //Data has positive and negative values - use a zero color
                         //Subtract 1 from the scale value - see note above (desired range is -1 to -2)
@@ -118,46 +134,69 @@ define(["jquery"], function ($) {
                 }
             }
         };
-
-        c.animateStateColor = function (state, newColor, duration) {
         
+        //Fades a state to a new color over a defined duration, and returns a reference
+        //to the animation in case it needs to be stopped
+        c.animateStateColor = function (state, newColor, duration) {
             var startColor, tracker, r, theAnimation;
            
+            //The start color is whatever color the state currently is
             if (m.stateObjs[state]) {
                 startColor = c.hexToRGB(m.stateObjs[state].attr("fill"));
             }
          
+            //If the end color is the same as the current color, don't need to do anything
             if (newColor === c.RGBToHex(startColor)) {
                 return false;
             }
             
+            //Stores how far along we are in the animation
             tracker = 0;
+            
+            //Public animation interface for later use
             theAnimation = {
+                
+                //The actual animation interval
                 r: setInterval(function () {
                     if (tracker > duration) {
                         clearInterval(r);
                         return false;
                     }
-                    var scale = tracker / duration,
+                    
+                    var scale = tracker / duration, //Stores what percent done the animation is
                         rgbColor,
                         frameColor = [0, 0, 0],
                         i;
+                    
+                    //Sanity check
                     if (state === "") {
                         return false;
                     }
+                    
+                    //Convert destination color to RGB
                     rgbColor = c.hexToRGB(newColor);
+                    
+                    //Calculate interim color
                     for (i = 0; i < 3; i += 1) {
                         frameColor[i] = Math.round((rgbColor[i] - startColor[i]) * scale + startColor[i]);
                     }
+                    
+                    //Set the state to the interim color
                     m.stateObjs[state].attr("fill", c.RGBToHex(frameColor));
+                    
+                    //Go again in 10 ms
                     tracker += 10;
                 }, 10),
+                
                 startColor: startColor,
                 theState: state,
                 newColors: newColor,
                 stopAnimation: function () {
                     clearInterval(this.r);
                 },
+                
+                /*For use in conjunction with stopAnimation, if it needs to be reset
+                to its normal data-based color*/
                 resetColorImmediately: function () {
                     m.stateObjs[state].attr("fill", startColor);
                 }
@@ -165,14 +204,26 @@ define(["jquery"], function ($) {
             return theAnimation;
         };
 
+        /*Set all states to their data-based colors - duration can be zero
+        in case it's an immediate change color situation (as in the initial draw)*/
         c.applyStateColors = function (duration) {
             var toAnimate, state;
+            
+            /*Create the animation reference object if it doesn't exist*/
+            if (typeof (m.animationRefs) === "undefined") {
+                m.animationRefs = {};
+            }
+            
             if (typeof (duration) === "undefined") {
                 duration = 0;
             }
+            
             if (duration > 0) {
                 toAnimate = {};
             }
+            
+            /*Particularly dark states need to have a white label - calculate
+            brightness of color*/
             function brightness(hexcolor) {
                 var color = c.hexToRGB(hexcolor);
                 return color[0] + color[1] + color[2];
@@ -182,11 +233,15 @@ define(["jquery"], function ($) {
                 if (c.stateColors.hasOwnProperty(state)) {
                     if (m.stateObjs[state]) {
                         if (duration === 0) {
+                            //If duration is zero, no need for animation - just
+                            //set the fill
                             m.stateObjs[state].attr("fill", c.stateColors[state]);
                         } else {
+                            //Or, remember that we need to animate this
                             toAnimate[state] = c.stateColors[state];
                         }
                         if (m.stateLabelObjs[state]) {
+                            //If the color is dark, make the label white
                             if (brightness(c.stateColors[state]) < 200) {
                                 m.stateLabelObjs[state].attr("fill", "#ffffff");
                             } else {
@@ -196,10 +251,11 @@ define(["jquery"], function ($) {
                     }
                 }
             }
+            //Execute the animations
             if (duration > 0) {
                 for (state in toAnimate) {
                     if (toAnimate.hasOwnProperty(state)) {
-                        c.animateStateColor(state, toAnimate[state], duration);
+                        m.animationRefs[state] = c.animateStateColor(state, toAnimate[state], duration);
                     }
                 }
             }
