@@ -2,11 +2,14 @@
 /* CSS Document */
 
 body {
-    width:525px;
-    font-family:"myriad-pro-condensed",sans-serif;     
+    width:940px;
+    font-family:"myriad-pro-condensed",sans-serif;  
+    padding:0px;
+    margin:0px;
 }
 
 h2.maintitle {
+    font-size:42pt;
     text-align:center;
     padding:0px;
     margin:0px;
@@ -31,7 +34,7 @@ h2.maintitle {
 }
 #yearPicker {
     font-weight:bold;
-    font-size:15pt;
+    font-size:36pt;
     text-align:center;
     width:100%;
 }

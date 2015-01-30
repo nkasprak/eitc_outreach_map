@@ -11,7 +11,7 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
         
         //get width and height of the parent div (given in ops)
         m.width = $("#" + ops.mapDivID).width();
-        m.height = m.width * (360 / 525);
+        m.height = m.width * (370 / 525);
         
         //assign data to object
         m.data = ops.data;
@@ -143,7 +143,7 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
 				m.stateObjs[state].attr({
 					cursor: "pointer",
 					fill: "#999",
-					"stroke-width": 0.5
+					"stroke-width": 1 * m.scaleFactor
 				});
 				
 				//store raphael IDs of each state

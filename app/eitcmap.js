@@ -75,12 +75,21 @@ define(["map", "eitcdata", "jquery", "stateNames"], function (Map, eitcData, $, 
         
         /*Template for popup box. Function must return an HTML string*/
         popupTemplate: function (data, state) {
+            function formatNumber(n) {
+                var m = eitc_map.map;
+                if (n >= 1000000) {
+                    return m.utilities.commaSeparateNumber(Math.round(n / 10000) / 100) + " billion";
+                } else {
+                    return m.utilities.commaSeparateNumber(Math.round(n / 100) / 10) + " million";
+                }
+            }
+            
             if (isNaN(data[0])) {
                 return "No data";
             }
             var str = "<h4>" + stateNames[state] + ", " + eitc_map.year + "</h4>";
             str += "<p>Number of Claims: " + this.utilities.commaSeparateNumber(data[0]) + "<br />";
-            str += "Dollar Amount (in thousands): $" + this.utilities.commaSeparateNumber(data[1]) + "<br />";
+            str += "Dollar Amount: $" + formatNumber(data[1]) + "<br />";
             str += "Total Returns: " + this.utilities.commaSeparateNumber(data[2]) + "<br />";
             str += "Percent of Total Filers: " + Math.round(data[3] * 10000) / 100 + "%</p>";
             return str;

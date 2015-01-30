@@ -13,11 +13,11 @@ define(["jquery"], function ($) {
             if (typeof (m.mousePos) === "undefined") {
                 m.mousePos = {};
             }
-            
+           
             if (typeof (e.pageX === "undefined")) {
                 //IE8 fallback
                 m.mousePos.x = e.clientX;
-                m.mousePos.y = e.clientY;
+                m.mousePos.y = e.clientY + $("body").scrollTop();
             } else {
                 //Real browsers
                 m.mousePos.x = e.pageX;
