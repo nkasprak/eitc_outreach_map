@@ -41,13 +41,13 @@ define(["jquery"], function ($) {
         
         //Use the custom max min if defined, otherwise, calculated based on data
         c.calculateMinMax = function () {
-            if (c.customMax) {
+            if (typeof (c.customMax) !== "undefined") {
                 m.max = c.customMax;
             } else {
                 m.max = c.calculateBound(m.data, m.dataIndex, "max");
             }
 
-            if (c.customMin) {
+            if (typeof (c.customMin) !== "undefined") {
                 m.min = c.customMin;
             } else {
                 m.min = c.calculateBound(m.data, m.dataIndex, "min");

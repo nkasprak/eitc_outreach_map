@@ -60,6 +60,11 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
             };
         }
         
+        if (ops.hideUS) {
+            delete paths.states.US;
+            delete paths.text.US;
+        }
+        
         m.colorConfig = ops.colorConfig;
         
         /*create the main Raphael canvas*/
@@ -143,7 +148,7 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
 				m.stateObjs[state].attr({
 					cursor: "pointer",
 					fill: "#999",
-					"stroke-width": 1 * m.scaleFactor
+					"stroke-width": m.scaleFactor
 				});
 				
 				//store raphael IDs of each state
@@ -210,7 +215,7 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
         };
         
         this.drawPaths();
-        this.colors = new MapColors(m.colorConfig, this);
+        this.colors = new MapColors(m.colorConfig, this, ops.customMax, ops.customMin);
         this.colors.calcStateColors();
         this.colors.applyStateColors();
         
@@ -220,7 +225,9 @@ define(["jquery", "raphael", "uspaths", "mapcolors", "mapevents", "legend"], fun
         if (ops.legendFormatter) {
             this.legendMaker.setFormatter(ops.legendFormatter);
         }
-        this.legendMaker.draw(this);
+        if (ops.hideLegend !== true) {
+            this.legendMaker.draw(this);
+        }
         
     };
     return map;
